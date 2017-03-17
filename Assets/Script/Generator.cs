@@ -7,8 +7,9 @@ namespace IISCI.Viktor
     public class Generator : MonoBehaviour
     {
         #region Parameters
-
-        private float _timeEnd = 30f; //Время до конца спавна объектов.
+        [SerializeField]
+        private float _timeEnd = 10f; //Время до конца спавна объектов.
+        [SerializeField]
         private float _timeEndCount; //Текущее время.
 
         private float _timeSpawn; //Время до появления объекта.
@@ -20,11 +21,7 @@ namespace IISCI.Viktor
 
         //Область появления объектов.
         [SerializeField]
-        private float _spawnX = 1;
-        [SerializeField]
-        private float _spawnY = 1;
-        [SerializeField]
-        private float _spawnZ = 1;
+        private float _spawnRange = 1;
 
         private bool _generatorEndFlag = false; //Флаг завершения генерации 
         private TrackBuilder _trackBuilder;
@@ -45,11 +42,11 @@ namespace IISCI.Viktor
             {
                 if (_timeSpawn <= _timeSpawnCount) //Отсчитываем время до следующего спавна объекта
                 {
-                    tempObject = Instantiate(_objects[Random.Range(0, _objects.Length)], new Vector3(Random.Range(_spawnX * (-1), _spawnX), Random.Range(_spawnX * (-1), _spawnY), 0), Quaternion.identity);
-                    Debug.Log("Объект " + tempObject.ToString() + " появился");
-                    Destroy(tempObject, 1);
+                    tempObject = Instantiate(_objects[Random.Range(0, _objects.Length)], new Vector3(Random.Range(-_spawnRange, _spawnRange), Random.Range(-_spawnRange, _spawnRange), Random.Range(-_spawnRange, _spawnRange)), Quaternion.identity);
+                    Debug.Log("Объект " + tempObject.ToString() + " появился на точке" + tempObject.transform.position);
+                    //Destroy(tempObject, 1);
                     _timeSpawnCount = 0; //Обнуляем таймер спавна объектов. 
-                    _timeSpawn = Random.Range(1f, 3f); //Задаём, время следующего спавна объектов.
+                    _timeSpawn = Random.Range(0.1f, 1f); //Задаём, время следующего спавна объектов.
                 }
                 else
                 {

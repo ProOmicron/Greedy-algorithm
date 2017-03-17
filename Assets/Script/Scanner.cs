@@ -8,42 +8,22 @@ namespace IISCI.Viktor
     {
         [SerializeField]
         private List<Vector3> _objectPos;
-        [SerializeField]
-        private GameObject _foundObj;
-        private GameObject _oldObj;
-
-        private bool _findNewObj;
         
+        private GameObject _foundObj;        
+
         private void Update()
         {
             _foundObj = GameObject.FindGameObjectWithTag("Object");
-            if (_oldObj != _foundObj)
+            if (_foundObj)
             {
                 _objectPos.Add(_foundObj.transform.position);
-            }
-            _oldObj = _foundObj;
+                _foundObj.tag = "Registered";
+            }            
         }
 
-        public Vector3[] PosArray()
+        public List<Vector3> PosList()
         {
-            Vector3[] posArray = new Vector3[_objectPos.Count];
-            int i = 0;
-            foreach (Vector3 pos in _objectPos)
-            {
-                posArray[i] = pos;
-                i++;
-            }
-            return posArray;
-        }
-
-        public int Lenght()
-        {            
-            int i = 0;
-            foreach (Vector3 pos in _objectPos)
-            {                
-                i++;
-            }
-            return i;
+            return _objectPos;
         }
     }
 }
