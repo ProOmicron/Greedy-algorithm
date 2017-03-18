@@ -8,101 +8,95 @@ namespace IISCI.Viktor
 {
     public class TrackBuilder : MonoBehaviour
     {
+        #region Parameters
         private Scanner _scanner;
-        private List<Vector3> _scannerList;
-                
-        [SerializeField]
-        private List<Vector3> _minTrackList;
-      
+        private List<Vector3> _inportList;        
 
-        [SerializeField]
-        private List<float> _sortPointsDisCount;
-        [SerializeField]
-        private float _minPointsDis;
-        [SerializeField]
-        private int index;
+        [SerializeField] //Длины всех самых коротких путей относительно всех начальных точек.
+        private List<float> _trackLengthList; 
+        [SerializeField] //Длина самой короткой пути.
+        private float _minTrack; 
+        [SerializeField] //Номер точки относительно которой самый короткий путь.
+        private int _indexInMinTrack;
+        [SerializeField] //Расположение точек который образует самый короткий путь.
+        private List<Vector3> _minTrackPointsList;
 
-        private bool _flag = false;
-        
-        private void Update()
+        private bool _finish = false;
+        #endregion
+
+        IEnumerator StartSort()
         {
-            if (_flag)
-            {
-                _flag = false;
-                ArrayInport();
-                SearchMinTrack();                
-            }            
-            DrawTrack(_minTrackList, Color.blue);
+            InportList(); //Закешируем инпортированный лист.
+            SearchMinTrack(); //Ищем самый короткий путь.
+            yield return new WaitForSeconds(1f);
+            _finish = true;
+            StopAllCoroutines();
         }
 
-        private void ArrayInport()
-        {            
-            _scannerList = GameObject.Find("Scanner").GetComponent<Scanner>().PosList();
-        }
-
-        private void SearchMinTrack() //Поиск минимального пути
+        private void InportList()
         {
-
-            for (int startPoint = 0; startPoint < _scannerList.Count; startPoint++) //Ищем самые короткие пути относительно конкретной начальной точки.
+            try
             {
-                float _sortPointsTrack = 0;
-                List<Vector3> trackList = new List<Vector3>();
-
-                trackList.AddRange(SearchTrack(_scannerList, startPoint));
-
-                _sortPointsTrack = LengthOfTrack(trackList);
-
-                _sortPointsDisCount.Add(_sortPointsTrack);
+                _inportList = GameObject.Find("Scanner").GetComponent<Scanner>().PosList();
+            }
+            catch (Exception ex)
+            {
+                Debug.Log("При инпорте массива произошла ошибка: " + ex);
+                throw;
             }
 
-            index = _sortPointsDisCount.FindIndex(x => x == _sortPointsDisCount.Min()); //Присваиваем начальную точку, относительно которой самый короткий путь.
+        }
 
-            _minTrackList.AddRange(SearchTrack(_scannerList, index));
+        private void SearchMinTrack() //Поиск минимального пути моё виденние алгоритнма Дейкстры
+        {
+            for (int startPoint = 0; startPoint < _inportList.Count; startPoint++) //Ищем самые короткие пути относительно конкретной начальной точки.
+            {                
+                List<Vector3> trackList = new List<Vector3>();//Чтобы бы лучше читался код добавлю буферную коллекцию из векторов.
 
-            _minPointsDis = LengthOfTrack(_minTrackList);
+                trackList.AddRange(SearchMinTrack(_inportList, startPoint));//Сперва находим кротчайший путь с помощью метода SearchMinTrack с заданным начальной точкой.
+
+                _trackLengthList.Add(LengthOfTrack(trackList));//Потом после того как нашли кротчайший путь, вычисляем его длину и записываем в базу данных путей.
+            }
+
+            _indexInMinTrack = _trackLengthList.FindIndex(x => x == _trackLengthList.Min()); //Присваиваем начальную точку, относительно которой самый короткий путь.
+
+            _minTrackPointsList.AddRange(SearchMinTrack(_inportList, _indexInMinTrack));
+
+            _minTrack = LengthOfTrack(_minTrackPointsList);
 
         }
 
-        private List<Vector3> SearchTrack(List<Vector3> list, int startPoint) //Этот метод возвращает массив точек, расположенных таким образом, что формирую самый короткий путь
+        private List<Vector3> SearchMinTrack(List<Vector3> list, int startPoint) //Этот метод возвращает массив точек, расположенных таким образом, что формирую самый короткий путь, относительно начальной точки.
         {            
-            List<Vector3> _sortList = new List<Vector3>();
-            List<Vector3> _pointsList = new List<Vector3>();
+            List<Vector3> sortList = new List<Vector3>();
+            List<Vector3> pointsList = new List<Vector3>();
 
-            _pointsList.AddRange(list);
-            _sortList.Add(_pointsList[startPoint]);
-            _pointsList.RemoveAt(startPoint);
+            pointsList.AddRange(list);
+            sortList.Add(pointsList[startPoint]);
+            pointsList.RemoveAt(startPoint);
 
-            for (int i = 0; i < _sortList.Count; i++)
+            for (int i = 0; i < sortList.Count; i++)
             {
                 int index = 0;
-                float minDistance = 1000;
-                for (int j = 0; j < _pointsList.Count; j++)
+                float minDistance = Single.PositiveInfinity;
+                for (int j = 0; j < pointsList.Count; j++)
                 {
-                    if (minDistance > (_sortList[i] - _pointsList[j]).sqrMagnitude) //В целях оптимизации мы отказываемся, от этого выражения Vector3.Distance(_sortList[i], _pointsList[j])
+                    if (minDistance > (sortList[i] - pointsList[j]).sqrMagnitude) //В целях оптимизации мы отказываемся, от этого выражения Vector3.Distance(_sortList[i], _pointsList[j])
                     {
-                        minDistance = (_sortList[i] - _pointsList[j]).sqrMagnitude;
+                        minDistance = (sortList[i] - pointsList[j]).sqrMagnitude;
                         index = j;
                     }
                 }
-                if (_pointsList.Count >= 1)
+                if (pointsList.Count >= 1)
                 {
-                    _sortList.Add(_pointsList[index]);
-                    _pointsList.RemoveAt(index);
+                    sortList.Add(pointsList[index]);
+                    pointsList.RemoveAt(index);
                 }
-            }
-            
-            return _sortList;
-        }
-
-        private void DrawTrack(List<Vector3> arr, Color color)
-        {
-            for (int i = 0; i < arr.Count - 1; i++)
-            {
-                Debug.DrawLine(arr[i], arr[i + 1], color);
-            }
-        }
-
-        private float LengthOfTrack (List<Vector3> list)
+            }          
+            return sortList;
+        }    
+        
+        private float LengthOfTrack(List<Vector3> list) //Метод возвращающий длину пути
         {
             float lengthOfTrack = 0;
             for (int i = 0; i < list.Count - 1; i++)
@@ -112,9 +106,19 @@ namespace IISCI.Viktor
             return lengthOfTrack;
         }
 
-        public void Flag() // После завершения генерации объектов данный флаг запускает инпорт и сортировку.
+        public void StartOf() // После завершения генерации объектов данный флаг запускает инпорт и сортировку.
+        {            
+            StartCoroutine("StartSort");
+        }
+
+        public List<Vector3> Export()
         {
-            _flag = true;
+            return _minTrackPointsList;
+        }
+
+        public bool Finish()
+        {
+            return _finish;
         }
     }
 }

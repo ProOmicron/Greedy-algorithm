@@ -18,52 +18,43 @@ namespace IISCI.Viktor
         [SerializeField]
         private GameObject[] _objects;
         public GameObject tempObject;
-
-        //Область появления объектов.
-        [SerializeField]
-        private float _spawnRange = 1;
+        
+        [SerializeField] //Область появления объектов.
+        private float _spawnRadius = 1;
 
         private bool _generatorEndFlag = false; //Флаг завершения генерации 
         private TrackBuilder _trackBuilder;
-        
+
+        private bool _finish = false;
         #endregion
 
-        private void Update()
+        IEnumerator TimeEnd()
+        {            
+            yield return new WaitForSeconds(_timeEnd); //Ждём заданное количество секунд.            
+            Debug.Log("Генерация завершился!");
+            _finish = true;            
+            StopAllCoroutines(); //Останавливаем крутину генерации.
+        }
+
+        IEnumerator GenerateObject()
         {
-            if (!_generatorEndFlag)
+            while (true)
             {
-                GeneratorObject();
+                tempObject = Instantiate(_objects[Random.Range(0, _objects.Length)], Random.insideUnitSphere * _spawnRadius, Quaternion.identity);
+                Destroy(tempObject, 1f); //Созданный объект уничтожится через 1 секунду.
+                Debug.Log("Объект " + tempObject.ToString() + " сгенерировался по координатам " + tempObject.transform.position);
+                yield return new WaitForSeconds(Random.Range(0.1f, 1f));
             }
         }
 
-        private void GeneratorObject()
+        public void StartOf()
         {
-            if (_timeEnd >= _timeEndCount) //Отсчитываем время до 30 сек
-            {
-                if (_timeSpawn <= _timeSpawnCount) //Отсчитываем время до следующего спавна объекта
-                {
-                    tempObject = Instantiate(_objects[Random.Range(0, _objects.Length)], new Vector3(Random.Range(-_spawnRange, _spawnRange), Random.Range(-_spawnRange, _spawnRange), Random.Range(-_spawnRange, _spawnRange)), Quaternion.identity);
-                    Debug.Log("Объект " + tempObject.ToString() + " появился на точке" + tempObject.transform.position);
-                    //Destroy(tempObject, 1);
-                    _timeSpawnCount = 0; //Обнуляем таймер спавна объектов. 
-                    _timeSpawn = Random.Range(0.1f, 1f); //Задаём, время следующего спавна объектов.
-                }
-                else
-                {
-                    _timeSpawnCount += Time.deltaTime;
-                }
-                _timeEndCount += Time.deltaTime;
-            }
-            else
-            {
-                Debug.Log("Генерация завершился!");
-                _generatorEndFlag = true; //Сообщаем, что завершили генерацию объектов.
-                _trackBuilder = GameObject.Find("TrackBuilder").GetComponent<TrackBuilder>();
-                if (_trackBuilder)
-                {
-                    _trackBuilder.Flag();
-                }                
-            }
+            StartCoroutine("TimeEnd");
+            StartCoroutine("GenerateObject");
+        }
+        public bool Finish()
+        {
+            return _finish;
         }
     }
 }

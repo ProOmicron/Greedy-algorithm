@@ -7,9 +7,8 @@ namespace IISCI.Viktor
     public class Scanner : MonoBehaviour
     {
         [SerializeField]
-        private List<Vector3> _objectPos;
-        
-        private GameObject _foundObj;        
+        private List<Vector3> _objectPos;        
+        private GameObject _foundObj;
 
         private void Update()
         {
@@ -18,7 +17,7 @@ namespace IISCI.Viktor
             {
                 _objectPos.Add(_foundObj.transform.position);
                 _foundObj.tag = "Registered";
-            }            
+            }
         }
 
         public List<Vector3> PosList()
