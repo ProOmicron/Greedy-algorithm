@@ -8,14 +8,13 @@ namespace IISCI.Viktor
 {
     public class TrackBuilder : MonoBehaviour
     {
-        #region Parameters
-        private Scanner _scanner;
+        #region Parameters        
         private List<Vector3> _inportList;        
 
         [SerializeField] //Длины всех самых коротких путей относительно всех начальных точек.
         private List<float> _trackLengthList; 
         [SerializeField] //Длина самой короткой пути.
-        private float _minTrack; 
+        private float _minTrack = 0; 
         [SerializeField] //Номер точки относительно которой самый короткий путь.
         private int _indexInMinTrack;
         [SerializeField] //Расположение точек который образует самый короткий путь.
@@ -24,26 +23,11 @@ namespace IISCI.Viktor
         private bool _finish = false;
         #endregion
 
-        public void StartOf() // После завершения генерации объектов данный флаг запускает инпорт и сортировку.
+        public void StartTrackBuilder() // После завершения генерации объектов данный флаг запускает инпорт и сортировку.
         {
-            InportList(); //Закешируем инпортированный лист.
+            _inportList = GameObject.Find("Scanner").GetComponent<Scanner>().PosList(); //Закешируем и инпортируем лист.
             SearchMinTrack(); //Ищем самый короткий путь.            
             _finish = true;            
-        }
-
-        private void InportList()
-        {
-            try
-            {
-                _inportList = GameObject.Find("Scanner").GetComponent<Scanner>().PosList();
-
-            }
-            catch (Exception ex)
-            {
-                Debug.Log("При инпорте массива произошла ошибка: " + ex);
-                throw;
-            }
-
         }
 
         private void SearchMinTrack() //Поиск минимального пути моё виденние алгоритнма Дейкстры

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace IISCI.Viktor
 {
     public class MoveController : MonoBehaviour
     {
-        [SerializeField]
-        private float _speed = 10f;        
         [SerializeField]
         private List<Vector3> _scannerList;
         [SerializeField]
@@ -17,9 +16,15 @@ namespace IISCI.Viktor
         private float _timer;
         [SerializeField]
         private float _track;
+        private float _speed = 10f;
         private Vector3 _oldPosition;
 
         private bool _finish = false;
+
+        private void Start()
+        {
+            gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
+        }
 
         private void InportList()
         {
@@ -27,7 +32,12 @@ namespace IISCI.Viktor
         }
 
         IEnumerator Move()
-        {
+        {            
+            InportList();
+            _timer = Time.time;
+            transform.position = _scannerList[0];
+            _oldPosition = transform.position;
+
             while (_targetpoint != _scannerList.Count)
             {                
                 transform.position = Vector3.MoveTowards(transform.position, _scannerList[_targetpoint], _speed * Time.deltaTime);
@@ -50,12 +60,13 @@ namespace IISCI.Viktor
         }
 
         public void StartCoroutine()
+        { 
+            StartCoroutine(Move());
+        }
+
+        public void StartCoroutine(float speed)
         {
-            _timer = Time.time;
-            InportList();
-            transform.position = _scannerList[0];
-            gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
-            _oldPosition = transform.position;            
+            _speed = speed;
             StartCoroutine(Move());
         }
 
@@ -68,9 +79,14 @@ namespace IISCI.Viktor
             return _finish;
         }
 
+        public List<Vector3> Export() //По ТЗ путь должен быть наследован от Тестового объекта.
+        {
+            return _scannerList;
+        }
+
         public string MyToString()
         {
-            return "Длина пути : " + _track + "\r\nКоличество пройденных точек: " + _targetpoint + "\r\nВремя на прохождение: " + _timer;
+            return "Длина пути : " + _track + " unit.\r\nКоличество пройденных точек: " + _targetpoint + " шт.\r\nВремя на прохождение: " + _timer + " сек.";
         }
     }
 }

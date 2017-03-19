@@ -8,26 +8,19 @@ namespace IISCI.Viktor
     {
         #region Parameters
         [SerializeField]
-        private float _timeEnd = 30f; //Время до конца спавна объектов.
+        private GameObject[] _objects;
 
+        private GameObject tempObject;
+        private float _timeEnd = 30f; //Время до конца спавна объектов.
         private float _timeSpawn; //Время до появления объекта.
         private float _timeSpawnCount; //Время после появления предыдущего объекта.
-
-        [SerializeField]
-        private GameObject[] _objects;
-        public GameObject tempObject;
-        
-        [SerializeField] //Область появления объектов.
-        private float _spawnRadius = 1;
-
-        private bool _generatorEndFlag = false; //Флаг завершения генерации 
-        private TrackBuilder _trackBuilder;
-
+        private float _spawnRadius = 30; //Область появления объектов.
         private bool _finish = false;
         #endregion
 
         IEnumerator TimeEnd()
-        {            
+        {
+            StartCoroutine(GenerateObject());
             yield return new WaitForSeconds(_timeEnd); //Ждём заданное количество секунд.
             _finish = true;            
             StopAllCoroutines(); //Останавливаем крутину генерации.
@@ -39,22 +32,24 @@ namespace IISCI.Viktor
             {
                 tempObject = Instantiate(_objects[Random.Range(0, _objects.Length)], Random.insideUnitSphere * _spawnRadius, Quaternion.identity);
                 Destroy(tempObject, 1f); //Созданный объект уничтожится через 1 секунду.
-                Debug.Log("Объект " + tempObject.ToString() + " сгенерировался по координатам " + tempObject.transform.position);
+                //Debug.Log("Объект " + tempObject.ToString() + " сгенерировался по координатам " + tempObject.transform.position);
                 yield return new WaitForSeconds(Random.Range(0.1f, 1f));
             }
         }
 
         public void StartCoroutine()
         {
-            StartCoroutine(TimeEnd());
-            StartCoroutine(GenerateObject());
+            StartCoroutine(TimeEnd());            
         }
+
+        public void StartCoroutine(float timeEnd)
+        {
+            _timeEnd = timeEnd;
+            StartCoroutine(TimeEnd());            
+        }
+
         public bool Finish()
         {
-            if (_finish)
-            {
-                StopAllCoroutines();
-            }
             return _finish;
         }
     }

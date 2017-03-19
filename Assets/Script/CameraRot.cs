@@ -5,9 +5,8 @@ using UnityEngine;
 namespace IISCI
 {
     public class CameraRot : MonoBehaviour
-    {
-        [SerializeField]
-        private float _speed;
+    {        
+        private float _speed = 10;
         private float _rot;
 
         IEnumerator Move()
