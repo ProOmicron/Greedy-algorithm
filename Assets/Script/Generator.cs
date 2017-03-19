@@ -28,8 +28,7 @@ namespace IISCI.Viktor
 
         IEnumerator TimeEnd()
         {            
-            yield return new WaitForSeconds(_timeEnd); //Ждём заданное количество секунд.            
-            Debug.Log("Генерация завершился!");
+            yield return new WaitForSeconds(_timeEnd); //Ждём заданное количество секунд.
             _finish = true;            
             StopAllCoroutines(); //Останавливаем крутину генерации.
         }
@@ -45,13 +44,17 @@ namespace IISCI.Viktor
             }
         }
 
-        public void StartOf()
+        public void StartCoroutine()
         {
-            StartCoroutine("TimeEnd");
-            StartCoroutine("GenerateObject");
+            StartCoroutine(TimeEnd());
+            StartCoroutine(GenerateObject());
         }
         public bool Finish()
         {
+            if (_finish)
+            {
+                StopAllCoroutines();
+            }
             return _finish;
         }
     }

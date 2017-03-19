@@ -29,7 +29,7 @@ namespace IISCI.Viktor
             return _objectPos;
         }
 
-        public void StartOf()
+        public void StartCoroutine()
         {
             _finish = true;
         }

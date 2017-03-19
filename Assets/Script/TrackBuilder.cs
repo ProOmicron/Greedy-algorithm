@@ -24,13 +24,11 @@ namespace IISCI.Viktor
         private bool _finish = false;
         #endregion
 
-        IEnumerator StartSort()
+        public void StartOf() // После завершения генерации объектов данный флаг запускает инпорт и сортировку.
         {
             InportList(); //Закешируем инпортированный лист.
-            SearchMinTrack(); //Ищем самый короткий путь.
-            yield return new WaitForSeconds(1f);
-            _finish = true;
-            StopAllCoroutines();
+            SearchMinTrack(); //Ищем самый короткий путь.            
+            _finish = true;            
         }
 
         private void InportList()
@@ -107,11 +105,6 @@ namespace IISCI.Viktor
             return lengthOfTrack;
         }
 
-        public void StartOf() // После завершения генерации объектов данный флаг запускает инпорт и сортировку.
-        {            
-            StartCoroutine("StartSort");
-        }
-
         public List<Vector3> Export()
         {
             return _minTrackPointsList;
@@ -119,6 +112,10 @@ namespace IISCI.Viktor
 
         public bool Finish()
         {
+            if (_finish)
+            {
+                StopAllCoroutines();
+            }
             return _finish;
         }
     }

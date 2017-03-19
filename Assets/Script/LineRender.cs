@@ -11,12 +11,11 @@ namespace IISCI.Viktor
         private Scanner _scanner;
         private bool _finish = false;
 
-        IEnumerator StartLineRender()
+        public void StartCoroutine() // После завершения генерации путей данный флаг запускает инпорт и сортировку.
         {
             _lineRenderer = gameObject.GetComponent<LineRenderer>();
             _lineRenderer.numPositions = InportList().Length;
-            _lineRenderer.SetPositions(InportList());
-            yield return new WaitForSeconds(1f);
+            _lineRenderer.SetPositions(InportList());            
             _finish = true;
             StopAllCoroutines();
         }
@@ -34,15 +33,10 @@ namespace IISCI.Viktor
                 Debug.Log("При инпорте массива произошла ошибка: " + ex);
                 throw;
             }            
-        }
-
-        public void StartOf() // После завершения генерации путей данный флаг запускает инпорт и сортировку.
-        {
-            StartCoroutine("StartLineRender");
-        }
+        }        
 
         public bool Finish()
-        {
+        {            
             return _finish;
         }
     }

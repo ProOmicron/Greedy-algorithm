@@ -20,9 +20,9 @@ namespace IISCI
             }            
         }
 
-        public void StartOf()
+        public void StartCoroutine()
         {
-            StartCoroutine("Move");
+            StartCoroutine(Move());
         }
     }
 }

@@ -49,24 +49,22 @@ namespace IISCI.Viktor
             }         
         }
 
-        IEnumerator StartMove()
+        public void StartCoroutine()
         {
+            _timer = Time.time;
             InportList();
             transform.position = _scannerList[0];
             gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
-            _oldPosition = transform.position;
-            yield return new WaitForEndOfFrame();
-            StartCoroutine("Move");
-        }
-
-        public void StartOf()
-        {
-            StartCoroutine("StartMove");
-            _timer = Time.time;
+            _oldPosition = transform.position;            
+            StartCoroutine(Move());
         }
 
         public bool Finish()
         {
+            if (_finish)
+            {
+                StopAllCoroutines();
+            }           
             return _finish;
         }
 
