@@ -8,9 +8,7 @@ namespace IISCI.Viktor
     {
         #region Parameters
         [SerializeField]
-        private float _timeEnd = 10f; //Время до конца спавна объектов.
-        [SerializeField]
-        private float _timeEndCount; //Текущее время.
+        private float _timeEnd = 30f; //Время до конца спавна объектов.
 
         private float _timeSpawn; //Время до появления объекта.
         private float _timeSpawnCount; //Время после появления предыдущего объекта.

@@ -38,6 +38,7 @@ namespace IISCI.Viktor
             try
             {
                 _inportList = GameObject.Find("Scanner").GetComponent<Scanner>().PosList();
+
             }
             catch (Exception ex)
             {
