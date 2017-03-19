@@ -9,7 +9,7 @@ namespace IISCI.Viktor
     {        
         private bool _finish = false;        
 
-        public void StartLineRender() // После завершения генерации путей данный флаг запускает инпорт и сортировку.
+        public void StartLineRender()//После завершения движения, данный метод запускает инпорт и сортировку.
         {
             List<Vector3> scannerList = GameObject.Find("TestObject").GetComponent<MoveController>().Export();
             LineRenderer lineRenderer = gameObject.GetComponent<LineRenderer>();
@@ -18,7 +18,7 @@ namespace IISCI.Viktor
             _finish = true;            
         }        
 
-        public bool Finish()
+        public bool Finish()//Посылаем сигнал, о том что завершили работу данного класса.
         {            
             return _finish;
         }

@@ -36,6 +36,7 @@ namespace IISCI.Viktor
         private const int STOP_PROGRAMM = 9;
         #endregion
 
+        //Кэшируем все наши классы, которые будут задействованы, в нашем проекте.
         private MoveController _testObject;
         private TrackBuilder _trackBuilder;        
         private UIController _uiController;
@@ -63,7 +64,7 @@ namespace IISCI.Viktor
                 throw;
             }            
 
-            StartCoroutine(Main());
+            StartCoroutine(Main()); //Использование короутинов обеспечит большую оптимизацию. 
         }
 
         IEnumerator Main()
@@ -79,11 +80,11 @@ namespace IISCI.Viktor
                     case GENERATOR_START:
                         if (_timeGeneration > 0)
                         {
-                            _generator.StartCoroutine(_timeGeneration); //Запускаем генерацию объектов, с заданным промежутком врменени. 
+                            _generator.StartCoroutine(_timeGeneration); //Запускаем генерацию объектов, с заданным таймером. 
                         }
                         else
                         {
-                            _generator.StartCoroutine(); //Запускаем генерацию объектов. 
+                            _generator.StartCoroutine(); //Запускаем генерацию объектов. По умолчанию.
                         }
                         _scanner.StartCoroutine(); // Запускаем сканнер объектов.
                         Debug.Log("Началась генерация объектов");
@@ -99,7 +100,7 @@ namespace IISCI.Viktor
                         break;
 
                     case TRACKBUILDER_START:
-                        _trackBuilder.StartTrackBuilder(); //Запускаем поиск самого короткого пути.
+                        _trackBuilder.StartTrackBuilder(); //Запускаем поиск короткого пути.
                         Debug.Log("Запуск поиска короткого пути");
                         _case = TRACKBUILDER_FINISH;
                         break;
@@ -119,13 +120,13 @@ namespace IISCI.Viktor
                         }
                         else
                         {
-                            _testObject.StartCoroutine(); //Запускаем движущийся объект, со скростью по умолчанию.
+                            _testObject.StartMove(); //Запускаем движущийся объект, со скростью по умолчанию.
                         }                        
                         Debug.Log("Запуск объекта");
                         _case = MOVE_FINISH;
                         break;
                     case MOVE_FINISH:
-                        if (_testObject.Finish()) //Ожидаем авершения объекта.
+                        if (_testObject.Finish()) //Ожидаем завершения движения объекта.
                         {
                             Debug.Log("Объект завершил движение");
                             _case = PROGRAMM_END_START;
@@ -149,8 +150,8 @@ namespace IISCI.Viktor
                         }
                         break;
 
-                    case STOP_PROGRAMM:
-                        Debug.Log("Программа завершена");
+                    case STOP_PROGRAMM: //Завершаем программу.
+                        Debug.Log("Программа завершена. И пусть этот код изменит мою жизнь!");
                         StopAllCoroutines();
                         break;
                 }

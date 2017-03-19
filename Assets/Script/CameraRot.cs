@@ -9,7 +9,7 @@ namespace IISCI
         private float _speed = 10;
         private float _rot;
 
-        IEnumerator Move()
+        IEnumerator Move() //Данный метод просто вращает объект, к которому прикреплена камера.
         {
             while (true)
             {

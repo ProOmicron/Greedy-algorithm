@@ -9,7 +9,7 @@ namespace IISCI.Viktor
     {
         private Text _text;
 
-        public void StartUI() 
+        public void StartUI() //Данный класс пустоват, но тем не менее он есть, для будушего расшерения функционала UI.
         {
             _text = GameObject.Find("Text").GetComponent<Text>();
             _text.text = GameObject.Find("TestObject").GetComponent<MoveController>().MyToString();            
